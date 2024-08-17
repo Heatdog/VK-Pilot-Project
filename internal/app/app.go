@@ -2,7 +2,6 @@ package app
 
 import (
 	"VK-Pilot-Project/internal/config"
-	migration "VK-Pilot-Project/internal/migrations/tarantool"
 	tarantoolrepo "VK-Pilot-Project/internal/repository/users/tarantool"
 	loginservice "VK-Pilot-Project/internal/services/login"
 	"VK-Pilot-Project/internal/services/token/jwt"
@@ -61,11 +60,6 @@ func Run() error {
 
 	repo, err := tarantoolrepo.New(logger, conn)
 	if err != nil {
-		logger.Error(err.Error())
-		return err
-	}
-
-	if err := migration.Init(context, repo); err != nil {
 		logger.Error(err.Error())
 		return err
 	}

@@ -21,6 +21,9 @@ services:
       - "3301:3301"
     environment:
       - TARANTOOL_ADVERTISE_URI=ps-tarantool-vk:3301
+    volumes:
+      - ./migrations/tarantool/init.lua:/opt/tarantool/init.lua
+    command: tarantool /opt/tarantool/init.lua
 networks:
   ps:
     driver: bridge

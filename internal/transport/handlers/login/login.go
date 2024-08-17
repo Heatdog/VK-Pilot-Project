@@ -41,7 +41,7 @@ func (handler *handler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := handler.tokenService.Generate(r.Context(), id.String())
+	token, err := handler.tokenService.Generate(r.Context(), id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -18,7 +18,7 @@ type handler struct {
 }
 
 const (
-	loginURL = "/login"
+	loginURL = "/api/login"
 )
 
 func New(logger *slog.Logger, service *login.Service, mid *middleware.Handler, token token.Service) *handler {

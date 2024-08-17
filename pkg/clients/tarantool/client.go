@@ -11,8 +11,7 @@ import (
 
 func NewClient(ctx context.Context, cfg config.Tarantool) (*tarantooldb.Connection, error) {
 	dialer := tarantooldb.NetDialer{
-		Address: fmt.Sprintf("%s:%d", cfg.IP, cfg.Port),
-		User:    cfg.User,
+		Address: fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
 	}
 
 	opt := tarantooldb.Opts{

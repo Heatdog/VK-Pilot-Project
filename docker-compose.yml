@@ -1,0 +1,26 @@
+
+services:
+  server_vk:
+    image: server_vk:local
+    container_name: ps-server-vk
+    ports:
+      - "8080:8080"
+    depends_on:
+      - tarantool
+    networks:
+      - ps
+    environment:
+      - CONFIG_PATH=config.yaml
+
+  tarantool:
+    image: tarantool/tarantool:latest
+    container_name: ps-tarantool-vk
+    networks:
+      - ps
+    ports:
+      - "3301:3301"
+    environment:
+      - TARANTOOL_ADVERTISE_URI=ps-tarantool-vk:3301
+networks:
+  ps:
+    driver: bridge

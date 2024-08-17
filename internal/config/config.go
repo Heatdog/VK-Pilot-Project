@@ -4,7 +4,8 @@ import "github.com/spf13/viper"
 
 type Config struct {
 	Server    ServerListen `mapstructure:"server_listen"`
-	Tarantool Tarantool    `mapstructure:"tarantool"`
+	Tarantool Tarantool    `mapstructure:"tarantool_settings"`
+	Tokens    Tokens       `mapstructure:"tokens"`
 }
 
 type ServerListen struct {
@@ -13,10 +14,14 @@ type ServerListen struct {
 }
 
 type Tarantool struct {
-	IP             string `mapstructure:"ip"`
+	Host           string `mapstructure:"host"`
 	Port           int    `mapstructure:"port"`
 	User           string `mapstructure:"user"`
 	TimeoutSeconds int    `mapstructure:"timeout_seconds"`
+}
+
+type Tokens struct {
+	Key string `mapstructure:"key"`
 }
 
 func New(path string) (*Config, error) {

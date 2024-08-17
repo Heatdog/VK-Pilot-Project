@@ -14,19 +14,25 @@ type handler struct {
 	logger       *slog.Logger
 	loginService *login.Service
 	tokenService token.Service
+	middleware   *middleware.Handler
 }
 
 const (
 	loginURL = "/login"
 )
 
-func HandleRoute(router *mux.Router, logger *slog.Logger, loginService *login.Service,
-	mid *middleware.Handler, tokenService token.Service) {
-	handler := &handler{
+func New(logger *slog.Logger, service *login.Service, mid *middleware.Handler, token token.Service) *handler {
+	return &handler{
 		logger:       logger,
-		loginService: loginService,
-		tokenService: tokenService,
+		loginService: service,
+		tokenService: token,
+		middleware:   mid,
 	}
+}
 
-	router.HandleFunc(loginURL, mid.Recover(mid.Logging(handler.login))).Methods(http.MethodPost)
+func (handler *handler) HandleRoute(router *mux.Router) {
+	router.HandleFunc(loginURL,
+		handler.middleware.Recover(
+			handler.middleware.Logging(handler.login))).
+		Methods(http.MethodPost)
 }

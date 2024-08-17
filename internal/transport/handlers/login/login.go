@@ -7,6 +7,18 @@ import (
 	"net/http"
 )
 
+// Вход в систему
+// @Summary Login
+// @Description Вход в систему
+// @ID login
+// @Tags login
+// @Accept json
+// @Produce json
+// @Param input body auth.ModelRequest true "auth info"
+// @Success 200 {object} auth.ModelResponse токен аутентификации
+// @Failure 400 {object} auth.ErrorResponse Некорректные данные
+// @Failure 500 {object} auth.ErrorResponse Внутренняя ошибка сервера
+// @Router /api/login [post]
 func (handler *handler) login(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -16,7 +28,7 @@ func (handler *handler) login(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	var user auth.Model
+	var user auth.ModelRequest
 
 	if err := json.Unmarshal(body, &user); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -42,9 +54,7 @@ func (handler *handler) writeToken(w http.ResponseWriter, token string) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Add("content-type", "application/json")
 
-	resp, err := json.Marshal(struct {
-		Token string
-	}{
+	resp, err := json.Marshal(auth.ModelResponse{
 		Token: token,
 	})
 

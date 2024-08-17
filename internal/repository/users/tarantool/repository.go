@@ -25,14 +25,75 @@ const (
 	spaceUsers = "users"
 )
 
-func New(logger *slog.Logger, conn *tarantooldb.Connection) *Repository {
+func New(logger *slog.Logger, conn *tarantooldb.Connection) (*Repository, error) {
+	future := conn.Do(tarantooldb.NewCallRequest("box.schema.space.create").
+		Args([]interface{}{
+			spaceUsers,
+			map[string]bool{"if_not_exists": true},
+		}))
+
+	if _, err := future.Get(); err != nil {
+		return nil, err
+	}
+	/*
+
+		future = conn.Do(tarantooldb.NewCallRequest("box.space.users:format").
+			Args([][]map[string]string{
+				{
+					{
+						"name": "id",
+						"type": "uuid",
+					},
+					{
+						"name": "login",
+						"type": "string",
+					},
+					{
+						"name": "password",
+						"type": "string",
+					},
+				},
+			}))
+
+		if _, err := future.Get(); err != nil {
+			return nil, err
+		}
+
+		future = conn.Do(tarantooldb.NewCallRequest("box.space.users:create_index").
+			Args([]interface{}{
+				"primary",
+				map[string]interface{}{
+					"parts":         []string{"id"},
+					"if_not_exists": true,
+				},
+			}))
+
+		if _, err := future.Get(); err != nil {
+			return nil, err
+		}
+
+		future = conn.Do(tarantooldb.NewCallRequest("box.space.users:create_index").
+			Args([]interface{}{
+				"loginidx",
+				map[string]interface{}{
+					"parts":         []string{"login"},
+					"type":          "BTREE",
+					"unique":        true,
+					"if_not_exists": true,
+				},
+			}))
+
+		if _, err := future.Get(); err != nil {
+			return nil, err
+		}
+	*/
 	return &Repository{
 		logger: logger,
 		conn:   conn,
-	}
+	}, nil
 }
 
-func (repo *Repository) Insert(ctx context.Context, user auth.Model) (uuid.UUID, error) {
+func (repo *Repository) Insert(ctx context.Context, user auth.ModelRequest) (uuid.UUID, error) {
 	id := uuid.New()
 
 	hashedPSWD, err := repo.hasher.Hash(user.Password)

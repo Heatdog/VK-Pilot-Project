@@ -1,0 +1,62 @@
+basePath: /
+definitions:
+  auth.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  auth.ModelRequest:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  auth.ModelResponse:
+    properties:
+      token:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API для tarantool
+  title: Tarantool API
+paths:
+  /api/login:
+    post:
+      consumes:
+      - application/json
+      description: Вход в систему
+      operationId: login
+      parameters:
+      - description: auth info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/auth.ModelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.ModelResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/auth.ErrorResponse'
+      summary: Login
+      tags:
+      - login
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: token
+    type: apiKey
+swagger: "2.0"

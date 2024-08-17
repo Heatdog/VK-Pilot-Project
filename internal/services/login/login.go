@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (service *Service) Login(ctx context.Context, auth auth.Model) (uuid.UUID, error) {
+func (service *Service) Login(ctx context.Context, auth auth.ModelRequest) (uuid.UUID, error) {
 	user, err := service.repo.GetByLogin(ctx, auth.Login)
 	if err != nil {
 		return uuid.UUID{}, errors.New("no user with login " + auth.Login)

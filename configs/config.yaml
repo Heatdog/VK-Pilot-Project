@@ -4,5 +4,10 @@ server_listen:
   port: 8080
 
 tarantool_settings:
-  host: postgre
-  port: 5432
+  host: tarantool
+  port: 3301
+  user: admin
+  timeout_seconds: 1
+
+tokens:
+  key: 123

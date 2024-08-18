@@ -15,8 +15,10 @@ func Init(ctx context.Context, repo *tarantool.Repository) error {
 	}
 
 	for _, user := range users {
-		if _, err := repo.Insert(ctx, user); err != nil {
-			return err
+		if _, ok := repo.GetByLogin(ctx, user.Login); !ok {
+			if _, err := repo.Insert(ctx, user); err != nil {
+				return err
+			}
 		}
 	}
 	return nil

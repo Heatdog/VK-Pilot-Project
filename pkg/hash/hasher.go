@@ -9,7 +9,7 @@ func (Hasher) Hash(str string) ([]byte, error) {
 	return bcrypt.GenerateFromPassword([]byte(str), cost)
 }
 
-func (Hasher) VerifuHash(hashedStr []byte, str string) bool {
+func (Hasher) VerifyHash(hashedStr []byte, str string) bool {
 	if err := bcrypt.CompareHashAndPassword(hashedStr, []byte(str)); err != nil {
 		return false
 	}

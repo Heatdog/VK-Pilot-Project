@@ -4,6 +4,7 @@ import (
 	"VK-Pilot-Project/internal/models/auth"
 	"encoding/json"
 	"io"
+	"log/slog"
 	"net/http"
 )
 
@@ -22,6 +23,7 @@ import (
 func (handler *handler) login(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
+		handler.logger.Error("read body", slog.String("error", err.Error()))
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -31,18 +33,21 @@ func (handler *handler) login(w http.ResponseWriter, r *http.Request) {
 	var user auth.ModelRequest
 
 	if err := json.Unmarshal(body, &user); err != nil {
+		handler.logger.Error("unmarshal body", slog.String("error", err.Error()))
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	id, err := handler.loginService.Login(r.Context(), user)
 	if err != nil {
+		handler.logger.Error("user login", slog.String("error", err.Error()))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	token, err := handler.tokenService.Generate(r.Context(), id)
 	if err != nil {
+		handler.logger.Error("token generate", slog.String("error", err.Error()))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

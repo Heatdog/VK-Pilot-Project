@@ -9,7 +9,7 @@ func (handler *Handler) Recover(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			rec := recover()
-			if r != nil {
+			if rec != nil {
 				var err error
 				switch t := rec.(type) {
 				case string:

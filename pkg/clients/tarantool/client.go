@@ -18,5 +18,14 @@ func NewClient(ctx context.Context, cfg config.Tarantool) (*tarantooldb.Connecti
 		Timeout: time.Duration(cfg.TimeoutSeconds) * time.Second,
 	}
 
-	return tarantooldb.Connect(ctx, dialer, opt)
+	conn, err := tarantooldb.Connect(ctx, dialer, opt)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err = conn.Do(tarantooldb.NewPingRequest()).Get(); err != nil {
+		return nil, err
+	}
+
+	return conn, nil
 }

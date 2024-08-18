@@ -10,5 +10,3 @@ box.space.users:format({
 
 box.space.users:create_index('primary', {parts = {'id'}, if_not_exists = true})
 box.space.users:create_index('login', {parts = {'login'}, if_not_exists = true})
-
-box.space.users:insert{"1", "admin", "presale"}

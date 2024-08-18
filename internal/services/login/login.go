@@ -7,12 +7,12 @@ import (
 )
 
 func (service *Service) Login(ctx context.Context, auth auth.ModelRequest) (string, error) {
-	user, err := service.repo.GetByLogin(ctx, auth.Login)
-	if err != nil {
+	user, ok := service.repo.GetByLogin(ctx, auth.Login)
+	if !ok {
 		return "", errors.New("no user with login " + auth.Login)
 	}
 
-	if !service.hasher.VerifuHash([]byte(user.Password), auth.Password) {
+	if !service.hasher.VerifyHash([]byte(user.Password), auth.Password) {
 		return "", errors.New("wrong password")
 	}
 	return user.ID, nil

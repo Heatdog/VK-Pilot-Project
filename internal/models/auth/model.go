@@ -6,7 +6,7 @@ type ModelRequest struct {
 }
 
 type ModelResponse struct {
-	Token string
+	Token string `json:"token"`
 }
 
 type ErrorResponse struct {

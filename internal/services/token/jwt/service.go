@@ -28,7 +28,7 @@ func (service *Service) Generate(ctx context.Context, id string) (string, error)
 	}
 
 	token := jwtlib.NewWithClaims(jwtlib.SigningMethodHS256, payload)
-	return token.SignedString(service.key)
+	return token.SignedString([]byte(service.key))
 }
 
 func (service *Service) Validate(ctx context.Context, token string) (servicetoken.TokenFields, error) {

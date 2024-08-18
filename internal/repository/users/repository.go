@@ -10,5 +10,5 @@ import (
 
 type Repository interface {
 	Insert(ctx context.Context, user auth.ModelRequest) (uuid.UUID, error)
-	GetByLogin(ctx context.Context, login string) (users.Model, error)
+	GetByLogin(ctx context.Context, login string) (users.Model, bool)
 }

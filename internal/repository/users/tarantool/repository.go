@@ -6,7 +6,6 @@ import (
 	"VK-Pilot-Project/internal/repository/users"
 	"VK-Pilot-Project/pkg/hash"
 	"context"
-	"errors"
 	"log/slog"
 
 	"github.com/google/uuid"
@@ -23,6 +22,7 @@ type Repository struct {
 
 const (
 	spaceUsers = "users"
+	loginIndx  = "login"
 )
 
 func New(logger *slog.Logger, conn *tarantooldb.Connection) (*Repository, error) {
@@ -48,23 +48,49 @@ func (repo *Repository) Insert(ctx context.Context, user auth.ModelRequest) (uui
 		return uuid.UUID{}, err
 	}
 
+	repo.logger.Debug("insert", slog.String("id", id.String()), slog.String("login", user.Login))
 	return id, nil
 }
 
-func (repo *Repository) GetByLogin(ctx context.Context, login string) (usersmodel.Model, error) {
-	data, err := repo.conn.Do(tarantooldb.NewSelectRequest(spaceUsers).
-		Index("login").
+func (repo *Repository) GetByLogin(ctx context.Context, login string) (usersmodel.Model, bool) {
+	res, err := repo.conn.Do(tarantooldb.NewSelectRequest(spaceUsers).
+		Index(loginIndx).
+		Iterator(tarantooldb.IterEq).
 		Key([]interface{}{login})).
 		Get()
 
 	if err != nil {
-		return usersmodel.Model{}, err
+		repo.logger.Error(err.Error())
+		return usersmodel.Model{}, false
 	}
 
-	res, ok := data[0].(usersmodel.Model)
+	repo.logger.Debug("results", slog.Any("users", res))
+
+	if len(res) != 1 {
+		return usersmodel.Model{}, false
+	}
+
+	tuple, ok := res[0].([]interface{})
 	if !ok {
-		return usersmodel.Model{}, errors.New("bad cast")
+		return usersmodel.Model{}, false
 	}
 
-	return res, nil
+	id, ok := tuple[0].(string)
+	if !ok {
+		return usersmodel.Model{}, false
+	}
+
+	hashedPSWD, ok := tuple[2].(string)
+	if !ok {
+		return usersmodel.Model{}, false
+	}
+
+	el := usersmodel.Model{
+		ID:       id,
+		Login:    login,
+		Password: hashedPSWD,
+	}
+
+	repo.logger.Debug("get", slog.Any("user", el))
+	return el, true
 }

@@ -1,13 +1,18 @@
 package middleware
 
-import "log/slog"
+import (
+	"VK-Pilot-Project/internal/services/token"
+	"log/slog"
+)
 
 type Handler struct {
-	logger *slog.Logger
+	logger       *slog.Logger
+	tokenService token.Service
 }
 
-func New(logger *slog.Logger) *Handler {
+func New(logger *slog.Logger, service token.Service) *Handler {
 	return &Handler{
-		logger: logger,
+		logger:       logger,
+		tokenService: service,
 	}
 }

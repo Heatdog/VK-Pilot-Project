@@ -70,10 +70,10 @@ func Run() error {
 		return err
 	}
 
-	mid := middleware.New(logger)
-
 	loginService := loginservice.New(logger, repo)
 	tokenService := jwt.New(conf.Tokens.Key)
+
+	mid := middleware.New(logger, tokenService)
 
 	loginHandler := login.New(logger, loginService, mid, tokenService)
 

@@ -17,8 +17,8 @@ import (
 // @Produce json
 // @Param input body auth.ModelRequest true "auth info"
 // @Success 200 {object} auth.ModelResponse токен аутентификации
-// @Failure 400 {object} auth.ErrorResponse Некорректные данные
-// @Failure 500 {object} auth.ErrorResponse Внутренняя ошибка сервера
+// @Failure 400 {object} string Некорректные данные
+// @Failure 500 {object} string Внутренняя ошибка сервера
 // @Router /api/login [post]
 func (handler *handler) login(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)

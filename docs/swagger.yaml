@@ -1,10 +1,5 @@
 basePath: /
 definitions:
-  auth.ErrorResponse:
-    properties:
-      error:
-        type: string
-    type: object
   auth.ModelRequest:
     properties:
       login:
@@ -16,6 +11,17 @@ definitions:
     properties:
       token:
         type: string
+    type: object
+  data.StatusResponse:
+    properties:
+      status:
+        type: string
+    type: object
+  data.Write:
+    properties:
+      data:
+        additionalProperties: true
+        type: object
     type: object
 host: localhost:8080
 info:
@@ -46,14 +52,49 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/auth.ErrorResponse'
+            type: string
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/auth.ErrorResponse'
+            type: string
       summary: Login
       tags:
       - login
+  /api/write:
+    post:
+      consumes:
+      - application/json
+      description: Запись данных
+      operationId: data-write
+      parameters:
+      - description: write data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/data.Write'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/data.StatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Wite
+      tags:
+      - data
 securityDefinitions:
   ApiKeyAuth:
     in: header

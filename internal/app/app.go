@@ -2,10 +2,13 @@ package app
 
 import (
 	"VK-Pilot-Project/internal/config"
-	"VK-Pilot-Project/internal/migrations/tarantool"
-	tarantoolrepo "VK-Pilot-Project/internal/repository/users/tarantool"
+	migrations "VK-Pilot-Project/internal/migrations/tarantool"
+	datarepo "VK-Pilot-Project/internal/repository/data/tarantool"
+	usersrepo "VK-Pilot-Project/internal/repository/users/tarantool"
+	dataservice "VK-Pilot-Project/internal/services/data"
 	loginservice "VK-Pilot-Project/internal/services/login"
 	"VK-Pilot-Project/internal/services/token/jwt"
+	datahandler "VK-Pilot-Project/internal/transport/handlers/data"
 	"VK-Pilot-Project/internal/transport/handlers/login"
 	"VK-Pilot-Project/internal/transport/middleware"
 	tarantoolclient "VK-Pilot-Project/pkg/clients/tarantool"
@@ -59,26 +62,31 @@ func Run() error {
 	}
 	defer conn.Close()
 
-	repo, err := tarantoolrepo.New(logger, conn)
+	repoUsers, err := usersrepo.New(logger, conn)
 	if err != nil {
 		logger.Error(err.Error())
 		return err
 	}
 
-	if err = tarantool.Init(context, repo); err != nil {
+	repoData := datarepo.New(logger, conn)
+
+	if err = migrations.Init(context, repoUsers); err != nil {
 		logger.Error(err.Error())
 		return err
 	}
 
-	loginService := loginservice.New(logger, repo)
+	loginService := loginservice.New(logger, repoUsers)
 	tokenService := jwt.New(conf.Tokens.Key)
+	dataService := dataservice.New(logger, repoData)
 
 	mid := middleware.New(logger, tokenService)
 
 	loginHandler := login.New(logger, loginService, mid, tokenService)
+	dataHandler := datahandler.New(logger, dataService, mid)
 
 	router := makeMuxRouter(conf.Server.Port)
 	loginHandler.HandleRoute(router)
+	dataHandler.HandleRoute(router)
 
 	server := &http.Server{
 		Handler:           router,

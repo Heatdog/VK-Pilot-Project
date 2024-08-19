@@ -66,11 +66,22 @@ func (repo *Repository) GetByLogin(ctx context.Context, login string) (usersmode
 
 	repo.logger.Debug("results", slog.Any("users", res))
 
-	if len(res) != 1 {
+	el, ok := repo.parseUser(res, login)
+	if !ok {
 		return usersmodel.Model{}, false
 	}
 
-	tuple, ok := res[0].([]interface{})
+	repo.logger.Debug("get", slog.Any("user", el))
+
+	return el, true
+}
+
+func (reo *Repository) parseUser(data []interface{}, login string) (usersmodel.Model, bool) {
+	if len(data) != 1 {
+		return usersmodel.Model{}, false
+	}
+
+	tuple, ok := data[0].([]interface{})
 	if !ok {
 		return usersmodel.Model{}, false
 	}
@@ -90,7 +101,5 @@ func (repo *Repository) GetByLogin(ctx context.Context, login string) (usersmode
 		Login:    login,
 		Password: hashedPSWD,
 	}
-
-	repo.logger.Debug("get", slog.Any("user", el))
 	return el, true
 }

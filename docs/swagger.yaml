@@ -12,16 +12,22 @@ definitions:
       token:
         type: string
     type: object
+  data.DataStruct:
+    properties:
+      data:
+        type: object
+    type: object
+  data.KeysStruct:
+    properties:
+      keys:
+        items:
+          type: string
+        type: array
+    type: object
   data.StatusResponse:
     properties:
       status:
         type: string
-    type: object
-  data.Write:
-    properties:
-      data:
-        additionalProperties: true
-        type: object
     type: object
 host: localhost:8080
 info:
@@ -60,6 +66,41 @@ paths:
       summary: Login
       tags:
       - login
+  /api/read:
+    post:
+      consumes:
+      - application/json
+      description: Чтение данных
+      operationId: data-read
+      parameters:
+      - description: read keys
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/data.KeysStruct'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.DataStruct'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Read
+      tags:
+      - data
   /api/write:
     post:
       consumes:
@@ -72,7 +113,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/data.Write'
+          $ref: '#/definitions/data.DataStruct'
       produces:
       - application/json
       responses:
@@ -98,6 +139,6 @@ paths:
 securityDefinitions:
   ApiKeyAuth:
     in: header
-    name: token
+    name: Authorization
     type: apiKey
 swagger: "2.0"

@@ -6,6 +6,6 @@ import (
 )
 
 type Repository interface {
-	Write(ctx context.Context, write datamodel.Write) error
-	Read(ctx context.Context, read datamodel.Read) (datamodel.Write, error)
+	Write(ctx context.Context, write datamodel.DataStruct) error
+	Read(ctx context.Context, read datamodel.KeysStruct) (datamodel.DataStruct, error)
 }

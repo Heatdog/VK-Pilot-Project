@@ -35,7 +35,7 @@ import (
 
 // @securityDefinitions.apiKey ApiKeyAuth
 // @in header
-// @name token
+// @name Authorization
 func Run() error {
 	logger := makeLogger(slog.LevelDebug, os.Stdout)
 

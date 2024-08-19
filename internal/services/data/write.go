@@ -5,6 +5,6 @@ import (
 	"context"
 )
 
-func (service *Service) Write(ctx context.Context, write datamodel.Write) error {
+func (service *Service) Write(ctx context.Context, write datamodel.DataStruct) error {
 	return service.repo.Write(ctx, write)
 }

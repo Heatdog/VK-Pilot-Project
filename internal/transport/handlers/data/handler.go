@@ -16,7 +16,8 @@ type handler struct {
 }
 
 const (
-	loginURL = "/api/write"
+	writeURL = "/api/write"
+	readURL  = "/api/read"
 )
 
 func New(logger *slog.Logger, service *dataservice.Service, mid *middleware.Handler) *handler {
@@ -28,9 +29,15 @@ func New(logger *slog.Logger, service *dataservice.Service, mid *middleware.Hand
 }
 
 func (handler *handler) HandleRoute(router *mux.Router) {
-	router.HandleFunc(loginURL,
+	router.HandleFunc(writeURL,
 		handler.middleware.Recover(
 			handler.middleware.Logging(
 				handler.middleware.Auth(handler.write)))).
+		Methods(http.MethodPost)
+
+	router.HandleFunc(readURL,
+		handler.middleware.Recover(
+			handler.middleware.Logging(
+				handler.middleware.Auth(handler.read)))).
 		Methods(http.MethodPost)
 }

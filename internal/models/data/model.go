@@ -1,10 +1,10 @@
 package data
 
-type Write struct {
-	Data map[string]interface{} `json:"data"`
+type DataStruct struct {
+	Data map[string]interface{} `json:"data" swaggertype:"object"`
 }
 
-type Read struct {
+type KeysStruct struct {
 	Keys []string `json:"keys"`
 }
 

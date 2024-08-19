@@ -8,21 +8,21 @@ import (
 	"net/http"
 )
 
-// Запись данных
-// @Summary Wite
-// @Description Запись данных
+// Чтение данных
+// @Summary Read
+// @Description Чтение данных
 // @Security ApiKeyAuth
-// @ID data-write
+// @ID data-read
 // @Tags data
 // @Accept json
 // @Produce json
-// @Param input body data.DataStruct true "write data"
-// @Success 201 {object} data.StatusResponse статус операции
+// @Param input body data.KeysStruct true "read keys"
+// @Success 200 {object} data.DataStruct статус операции
 // @Failure 401 {object} nil Пользователь не авторизован
 // @Failure 400 {object} string Некорректные данные
 // @Failure 500 {object} string Внутренняя ошибка сервера
-// @Router /api/write [post]
-func (handler *handler) write(w http.ResponseWriter, r *http.Request) {
+// @Router /api/read [post]
+func (handler *handler) read(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		handler.logger.Error("read body", slog.String("error", err.Error()))
@@ -32,7 +32,7 @@ func (handler *handler) write(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	var request data.DataStruct
+	var request data.KeysStruct
 
 	if err := json.Unmarshal(body, &request); err != nil {
 		handler.logger.Error("unmarshal body", slog.String("error", err.Error()))
@@ -40,22 +40,21 @@ func (handler *handler) write(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := handler.service.Write(r.Context(), request); err != nil {
+	res, err := handler.service.Read(r.Context(), request)
+	if err != nil {
 		handler.logger.Error("service error", slog.String("error", err.Error()))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	handler.writeResult(w)
+	handler.readResult(w, res)
 }
 
-func (handler *handler) writeResult(w http.ResponseWriter) {
-	w.WriteHeader(http.StatusCreated)
+func (handler *handler) readResult(w http.ResponseWriter, res data.DataStruct) {
+	w.WriteHeader(http.StatusOK)
 	w.Header().Add("content-type", "application/json")
 
-	resp, err := json.Marshal(data.StatusResponse{
-		Status: "success",
-	})
+	resp, err := json.Marshal(res)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -21,7 +21,8 @@ type Tarantool struct {
 }
 
 type Tokens struct {
-	Key string `mapstructure:"key"`
+	Key     string `mapstructure:"key"`
+	Expired int    `mapstructure:"expired_minutes"`
 }
 
 func New(path string) (*Config, error) {

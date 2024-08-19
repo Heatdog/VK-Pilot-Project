@@ -42,7 +42,7 @@ func (handler *handler) write(w http.ResponseWriter, r *http.Request) {
 
 	if err := handler.service.Write(r.Context(), request); err != nil {
 		handler.logger.Error("service error", slog.String("error", err.Error()))
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 

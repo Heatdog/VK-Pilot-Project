@@ -11,3 +11,4 @@ tarantool_settings:
 
 tokens:
   key: 123
+  expired_minutes: 15

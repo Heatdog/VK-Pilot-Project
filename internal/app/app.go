@@ -76,7 +76,7 @@ func Run() error {
 	}
 
 	loginService := loginservice.New(logger, repoUsers)
-	tokenService := jwt.New(conf.Tokens.Key)
+	tokenService := jwt.New(conf.Tokens.Key, conf.Tokens.Expired)
 	dataService := dataservice.New(logger, repoData)
 
 	mid := middleware.New(logger, tokenService)

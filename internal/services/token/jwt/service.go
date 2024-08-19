@@ -12,19 +12,21 @@ import (
 var _ servicetoken.Service = (*Service)(nil)
 
 type Service struct {
-	key string
+	key     string
+	expired int
 }
 
-func New(key string) *Service {
+func New(key string, expired int) *Service {
 	return &Service{
-		key: key,
+		key:     key,
+		expired: expired,
 	}
 }
 
 func (service *Service) Generate(ctx context.Context, id string) (string, error) {
 	payload := jwtlib.MapClaims{
 		"sub": id,
-		"exp": time.Now().Add(time.Minute * 15).Unix(),
+		"exp": time.Now().Add(time.Minute * time.Duration(service.expired)).Unix(),
 	}
 
 	token := jwtlib.NewWithClaims(jwtlib.SigningMethodHS256, payload)
